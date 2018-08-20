@@ -123,10 +123,6 @@ summary(simple)
 simple1 <- subset(simple, everwrk == "1 Yes" | everwrk == "2 No")
 simple1 <- simple1 %>%
   transform(everwrk = droplevels(everwrk))
-simple1 <- simple1 %>% 
-  mutate(everwrk =
-           if_else(everwrk == "1 Yes", "1", "0")) %>% 
-  mutate(everwrk = factor(everwrk))
 str(simple1)
 summary(simple1)
 #
@@ -154,14 +150,10 @@ table(simpTest$everwrk, predictmod1 >= 0.5)
 ##   2. Predict the probability of working for each level of marital
 ##      status.
 simple2 <- simple1
-simple2 <- simple2 %>% 
-  mutate(everwrk =
-           if_else(everwrk == "1 Yes", "1", "0")) %>% 
-  mutate(everwrk = factor(everwrk))
 str(simple2)
 summary(simple2)
 #
-mod2 <- glm(everwrk ~ r_maritl, data = simple2, family = "binomial")
+mod2 <- glm(everwrk ~ age_p+r_maritl, data = simple2, family = "binomial")
 summary(mod2)
 #
 # convert to odds
@@ -173,6 +165,9 @@ mod2.prob <- mod2.tab / (1 + mod2.tab)
 mod2.prob
 summary(mod2.prob)
 #
+data.frame(Effect("r_maritl", mod2))
+#
+plot(allEffects(mod2))
 #
 ##   Note that the data is not perfectly clean and ready to be modeled. You
 ##   will need to clean up at least some of the variables before fitting
